@@ -19,13 +19,17 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             required: true,
         },
+        email: {
+            type: DataTypes.STRING,
+            required: true,
+        },
         nickname: {
             type: DataTypes.STRING,
-            required:true,
+            required: true,
         },
         password: {
             type: DataTypes.STRING,
-            required:true,
+            required: true,
         },
         profileImg: {
             type: DataTypes.STRING(1000),
