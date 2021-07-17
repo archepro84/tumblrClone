@@ -9,13 +9,26 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             giverUserId: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'userId'
+                },
+                onDelete: 'cascade',
             },
             receiverUserId: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'userId'
+                },
+                onDelete: 'cascade',
             },
             type: {
-                type: Sequelize.TINYINT
+                type: Sequelize.TINYINT,
+                allowNull: false,
             },
             createdAt: {
                 allowNull: false,

@@ -37,13 +37,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Alarms.associate = function (models) {
+        //참조할 때 Users 테이블에서 참조하는 기본키를 지정해줘야한다.
         models.Alarms.hasMany(models.Users, {
-            foreignKey: 'giverUserId',
-            onDelete: 'cascade',
-        })
-
-        models.Alarms.hasMany(models.Users, {
-            foreignKey: 'receiverUserId',
+            foreignKey: 'userId',
             onDelete: 'cascade',
         })
     }

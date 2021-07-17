@@ -5,7 +5,8 @@ module.exports = {
         "password": process.env.DB_PASSWORD,
         "database": "tumblrClone",
         "host": "localhost",
-        "dialect": "mysql"
+        "dialect": "mysql",
+        "logging":false
     },
     "test": {
         "username": "root",

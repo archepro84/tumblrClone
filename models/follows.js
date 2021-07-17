@@ -33,11 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Follows.associate = function (models) {
         models.Follows.hasMany(models.Users, {
-            foreignKey:'followUserId',
-            onDelete:'cascade',
-        })
-        models.Follows.hasMany(models.Users, {
-            foreignKey:'followerUserId',
+            foreignKey:'userId',
             onDelete:'cascade',
         })
     }

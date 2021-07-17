@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             required: true,
         },
+        reBlog: {
+            type:DataTypes.INTEGER
+        },
         title: {
             type: DataTypes.STRING,
         },

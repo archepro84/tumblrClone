@@ -11,10 +11,20 @@ module.exports = {
             followUserId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'userId'
+                },
+                onDelete: 'cascade',
             },
             followerUserId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'userId'
+                },
+                onDelete: 'cascade',
             },
             createdAt: {
                 allowNull: false,
