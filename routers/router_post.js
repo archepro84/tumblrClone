@@ -378,5 +378,97 @@ router.route('/like')
             )
         }
     })
+    
+const { Posts, Images, Tags } = require("../models");
+const Joi = require("joi");
+const authMiddleware = require("../middlewares/auth-middleware");
+
+const postIdSchema = Joi.number().required();
+const postPutSchema = Joi.object({
+  postId: Joi.number().required(),
+  title: Joi.string().required(),
+  img: Joi.string(),
+  content: Joi.string().required(),
+  tag: Joi.array().items(Joi.string()),
+});
+
+router
+  .route("/")
+  .put(authMiddleware, async (req, res) => {
+    try {
+      const { postId, title, img, content, tag } =
+        await postPutSchema.validateAsync(req.body);
+
+      //update의 반환값은 튜플이 몇개 변경되었는지 나타내는 수
+      await Posts.update(
+        { title, content },
+        {
+          where: { postId },
+        }
+      ).then((updateCount) => {
+        if (updateCount < 1) {
+          // 변경된 데이터가 없을 경우
+          res.status(400).send();
+          return;
+        }
+      });
+
+      await Images.update(
+        { img },
+        {
+          where: { postId },
+        }
+      ).then((updateCount) => {
+        if (updateCount < 1) {
+          // 변경된 데이터가 없을 경우
+          res.status(400).send();
+          return;
+        }
+      });
+
+      for (let tagReceive of tag) {
+        await Tags.update(
+          { tag: tagReceive },
+          {
+            where: { postId }, // 각각의 태그들을 하나씩 불러오려면 조건을 어떻게 해주어야 하는가?
+          }
+        ).then((updateCount) => {
+          if (updateCount < 1) {
+            // 변경된 데이터가 없을 경우
+            res.status(400).send();
+            return;
+          }
+        });
+      }
+    } catch (error) {
+      res.status(412).send();
+      return;
+    }
+  })
+
+  .delete(authMiddleware, async (req, res) => {
+    try {
+      const { userId } = res.locals.user;
+      const postId = await postIdSchema.validateAsync(req.body.postId);
+
+      await Posts.destroy({
+        where: {
+          postId,
+          userId,
+        },
+      }).then((deleteCount) => {
+        if (deleteCount < 1) {
+          res.status(400).send({
+            errorMessage: "데이터가 삭제되지 않았습니다.",
+          });
+        }
+      });
+
+      res.status(200).send();
+    } catch (error) {
+      res.status(412).send();
+      return;
+    }
+  });
 
 module.exports = router;
