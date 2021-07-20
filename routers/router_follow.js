@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi")
 const authMiddleware = require("../middlewares/auth-middleware")
-const {Users, Follows, sequelize, Sequelize} = require("../models")
-const {Op} = require("sequelize")
+const {Follows, sequelize, Sequelize} = require("../models")
 
 const userIdSchema = Joi.number().min(1).required()
 router.route('/')
@@ -78,18 +77,6 @@ router.route('/')
             res.status(412).send(
                 {errorMessage: "팔로우 삭제에 실패하였습니다."}
             )
-        }
-    })
-    // TODO 테스트용 삭제가 필요
-    .get(async (req, res) => {
-        try {
-            const user = await sequelize.query('SELECT * FROM Posts', {type: Sequelize.QueryTypes.SELECT})
-            console.log(user);
-            res.send(user)
-        } catch (error) {
-            res.status(400).send({
-                errorMessage: "Error "
-            })
         }
     })
 

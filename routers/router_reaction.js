@@ -15,7 +15,7 @@ router.route('/')
                 Object.keys(req.query).length ? req.query : req.body
             )
             const query = `
-            SELECT u.userId, u.nickname, 1 AS type, u.profileImg, p.createdAt
+            SELECT u.userId, u.nickname, 2 AS type, u.profileImg, p.createdAt
             FROM Posts AS p
             INNER JOIN Users AS u
             ON p.userId = u.userId 
@@ -28,9 +28,9 @@ router.route('/')
             INNER JOIN Users AS u
             ON f.userId = u.userId
             WHERE f.postId = ${postId}
+            
             ORDER BY createdAt DESC
             LIMIT ${start},${limit}`
-
             const result = await sequelize.query(query, {type: Sequelize.QueryTypes.SELECT})
 
             res.send({result})
