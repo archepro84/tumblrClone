@@ -9,7 +9,6 @@ const router_alarm = require("./router_alarm")
 const router_follow = require("./router_follow")
 const router_reaction = require("./router_reaction")
 
-
 const router = express.Router();
 
 router.use("/user", router_user)
