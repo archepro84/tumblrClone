@@ -10,7 +10,6 @@ const alarmSchema = Joi.object({
     limit: Joi.number().min(1).required(),
 });
 
-
 router.route("/")
     .get(authMiddleware, async (req, res) => {
         try {
@@ -36,16 +35,15 @@ router.route("/")
                 ON u.userId = a.giverUserId and a.receiverUserId = ${userId} and a.type = ${alarmType}
                 LIMIT ${start},${limit}`;
             }
-            await sequelize.query(query_result, {type: Sequelize.DataTypes.SELECT})
+            await sequelize.query(query_result, {type: Sequelize.QueryTypes.SELECT})
+                .then((result) => {
+                    res.status(200).send({result});
+                })
                 .catch((error) => {
                     res.status(400).send({
                         errorMessage: "데이터 검색이 실패했습니다.",
                     });
                     return;
-                })
-                .then((result) => {
-                    console.log(result);
-                    res.status(200).send({result});
                 })
         } catch (error) {
             console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
