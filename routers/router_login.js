@@ -28,22 +28,29 @@ const emailSchema = Joi.object({
 router.route("/")
     .post(loginCheckMiddleware, async (req, res) => {
         try {
-
             const {email, password} = await loginSchema.validateAsync(req.body);
             const user = await Users.findOne({
                 where: {email, password},
-            });
-
+            })
+                .then((user) => {
+                    return user['dataValues'];
+                });
             if (!user) {
                 res.status(401).send({
                     errorMessage: "이메일 또는 패스워드가 잘못되었습니다.",
                 });
                 return;
             }
-
             const token = jwt.sign({userId: user.userId}, process.env.SECRET_KEY);
+
             res.cookie("Authorization", token);
-            res.send();
+            res.send({
+                token,
+                userId: user.userId,
+                nickname: user.nickname,
+                profileImg: user.profileImg
+            });
+
         } catch {
             res.status(401).send({
                 errorMessage: "요청한 데이터가 올바르지 않습니다.",
@@ -52,7 +59,7 @@ router.route("/")
     });
 
 router.route("/email")
-    .post(async (req, res) => {
+    .post(loginCheckMiddleware, async (req, res) => {
         const {email} = await emailSchema.validateAsync(req.body);
 
         const existUsers = await Users.findAll({
@@ -67,5 +74,6 @@ router.route("/email")
             return;
         }
     });
+
 
 module.exports = router;

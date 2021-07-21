@@ -6,7 +6,8 @@ require('dotenv').config();
 const authorizationSchema = Joi.string().required()
 module.exports = async (req, res, next) => {
     try {
-        const Authorization = await authorizationSchema.validateAsync(req.cookies.Authorization)
+        const Authorization = await authorizationSchema.validateAsync(
+            req.cookies.Authorization ? req.cookies.Authorization : req.headers.authorization)
         const {userId} = jwt.verify(Authorization, process.env.SECRET_KEY);
 
         await Users.findByPk(userId)
