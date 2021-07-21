@@ -59,27 +59,19 @@ router
     try {
       const { userId } = res.locals.user;
 
-      await Alarms.findAll({
-        where: { receiverUserId: userId },
-      }).then((find) => {
-        if (find.length == 0) {
-          res.status(412).send({
-            errorMessage: "삭제할 알람이 없습니다.",
-          });
-          return;
-        }
-      });
-
       await Alarms.destroy({
         where: {
           receiverUserId: userId,
         },
-      }).then(() => {
+      }).then((destoryCount) => {
+          if(destoryCount<1) {
+              throw new Error;
+          }
         res.status(200).send();
       });
     } catch (error) {
       res.status(412).send({
-        errorMessage: "입력받은 데이터 형식이 일치하지 않습니다.",
+        errorMessage: "삭제에 실패했습니다.",
       });
     }
   });
