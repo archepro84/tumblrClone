@@ -43,7 +43,7 @@ router.route("/")
             }
             const token = jwt.sign({userId: user.userId}, process.env.SECRET_KEY);
 
-            res.cookie("Authorization", token);
+            res.cookie("authorization", token);
             res.send({
                 token,
                 userId: user.userId,
