@@ -35,6 +35,7 @@ router.route('/')
 
             res.send({result})
         } catch (error) {
+            console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
             res.status(412).send(
                 {errorMessage: "데이터 검색에 실패 하였습니다."}
             )

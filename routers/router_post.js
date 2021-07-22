@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require('../middlewares/auth-middleware')
 const authMiddlewareAll = require("../middlewares/auth-middlewareAll")
-const { Posts, Images, Tags, sequelize, Sequelize} = require("../models");
+const {Posts, Images, Tags, sequelize, Sequelize} = require("../models");
 const Joi = require("joi");
 
 const startLimitSchema = Joi.object({
@@ -14,10 +14,10 @@ const detailSchema = Joi.object({
     start: Joi.number().min(0).required(),
     limit: Joi.number().min(1).required(),
 })
+const postIdSchema = Joi.number().required();
 
 //reBlog : 숫자형이면서 null도 허용한다.
 const writePostSchema = Joi.object({
-    // title의 패턴을 삭제함
     title: Joi.string().min(1).max(50).allow(null, '').required(),
     reBlog: Joi.number().allow(null).required(),
     img: Joi.array().required(),
@@ -26,7 +26,6 @@ const writePostSchema = Joi.object({
 })
 
 const modifyPostSchema = Joi.object({
-    // title의 패턴을 삭제함
     postId: Joi.number().min(1).required(),
     title: Joi.string().min(1).max(50).allow(null, '').required(),
     reBlog: Joi.number().allow(null).required(),
@@ -121,6 +120,7 @@ router.route('/')
                     return post.null;
                 })
 
+
             if (Object.keys(tag).length) {
                 for (const t of tag) {
                     tagArray.push({postId, tag: t})
@@ -135,7 +135,7 @@ router.route('/')
                 await Images.bulkCreate(imgArray)
             }
 
-            res.send()
+            res.send({postId})
         } catch (error) {
             console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
             res.status(412).send(
@@ -144,7 +144,6 @@ router.route('/')
         }
     })
 
-    // FIXME 해당하는 Tag 또는 Image들을 전부 삭제한 후 추가하는게 과연 효율적일까?
     // 트리거를 사용해서 Posts의 데이터가 수정되었을 경우 Images, Tags를 삭제하도록 하자
     .put(authMiddleware, async (req, res) => {
         try {
@@ -189,7 +188,6 @@ router.route('/')
             )
         }
     })
-
     .delete(authMiddleware, async (req, res) => {
         try {
             const {userId} = res.locals.user;
@@ -209,7 +207,10 @@ router.route('/')
             });
             res.status(200).send();
         } catch (error) {
-            res.status(412).send();
+            console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
+            res.status(412).send(
+                {errorMessage: "게시글 삭제에 실패하였습니다."}
+            );
         }
     });
 
@@ -244,6 +245,7 @@ router.route('/posts')
                 USING(userId)
                 ORDER BY p.createdAt DESC, p.postId DESC
                 LIMIT ${start},${limit}`
+
             //Sequelize.query에서 에러가 발생할 경우 catch로 들어간다.
             await sequelize.query(query, {type: Sequelize.QueryTypes.SELECT})
                 .then((searchArray) => {
@@ -273,8 +275,8 @@ router.route('/posts')
                         )
                     }
                 })
-            // TODO 프로미스 내부에 작성해야 할까?
             res.send({result})
+
         } catch (error) {
             console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
             res.status(412).send(
@@ -320,7 +322,7 @@ router.route('/user')
                             tag = search.tag.split(', ')
 
                         result.push({
-                            posId: search.postId,
+                            postId: search.postId,
                             reBlog: search.reBlog,
                             title: search.title,
                             img,
@@ -331,7 +333,6 @@ router.route('/user')
                         })
                     }
                 })
-
             res.send({result})
         } catch (error) {
             console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
@@ -340,6 +341,7 @@ router.route('/user')
             )
         }
     })
+
 router.route('/like')
     .get(authMiddleware, async (req, res) => {
         try {
@@ -361,6 +363,9 @@ router.route('/like')
                     GROUP BY postId) AS tag,
                 (SELECT COUNT(*) FROM Favorites WHERE postId=p.postId) +
                     (SELECT COUNT(*) FROM Posts WHERE reBlog=p.postId) AS reactionCount,
+                (SELECT COALESCE(MIN('Y'), 'N')
+                    FROM Follows
+                    WHERE EXISTS (SELECT 1 FROM  Follows WHERE followUserId = ${userId} AND followerUserId=p.userId)) AS follow,
                 f.createdAt
                 FROM Posts AS p
                 INNER JOIN Users AS u
@@ -384,7 +389,7 @@ router.route('/like')
                             userId: search.userId,
                             nickname: search.nickname,
                             profileImg: search.profileImg,
-                            posId: search.postId,
+                            postId: search.postId,
                             reBlog: search.reBlog,
                             title: search.title,
                             img,
@@ -405,14 +410,29 @@ router.route('/like')
         }
     })
 
+router.route('/blogs')
+    .get(authMiddleware, async (req, res) => {
+        try {
+            const {userId} = res.locals.user
+            const limit = 5;
+            const query = `
+            SELECT userId, nickname, profileImg FROM Users
+            WHERE userId NOT IN (SELECT followerUserId FROM Follows WHERE followUserId = ${userId})
+            AND userId != ${userId}
+            ORDER BY RAND()
+            LIMIT ${limit}`
+            await sequelize.query(query, {type: Sequelize.QueryTypes.SELECT})
+                .then((result) => {
+                    res.send(result)
+                })
 
-const postIdSchema = Joi.number().required();
-const postPutSchema = Joi.object({
-    postId: Joi.number().required(),
-    title: Joi.string().required(),
-    img: Joi.string(),
-    content: Joi.string().required(),
-    tag: Joi.array().items(Joi.string()),
-});
+
+        } catch (error) {
+            console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
+            res.status(412).send(
+                {errorMessage: "추천 블로그를 가져올 수 없습니다."}
+            )
+        }
+    })
 
 module.exports = router;

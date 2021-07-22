@@ -10,7 +10,7 @@ const loginSchema = Joi.object({
     email: Joi.string()
         .required()
         .pattern(
-            /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+            /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,6}$/i
         ),
     password: Joi.string()
         .required()
@@ -21,7 +21,7 @@ const emailSchema = Joi.object({
     email: Joi.string()
         .required()
         .pattern(
-            /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+            /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,6}$/i
         ),
 });
 
@@ -51,8 +51,9 @@ router.route("/")
                 profileImg: user.profileImg
             });
 
-        } catch {
-            res.status(401).send({
+        } catch (error) {
+            console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
+            res.status(412).send({
                 errorMessage: "요청한 데이터가 올바르지 않습니다.",
             });
         }
@@ -60,19 +61,27 @@ router.route("/")
 
 router.route("/email")
     .post(loginCheckMiddleware, async (req, res) => {
-        const {email} = await emailSchema.validateAsync(req.body);
+        try {
 
-        const existUsers = await Users.findAll({
-            where: {email}, // 변수는 변수 한개만 넣어줘도 모든 속성 값에서 찾아줄 수 있다.
-        });
+            const {email} = await emailSchema.validateAsync(req.body);
 
-        if (existUsers.length) {
+            const existUsers = await Users.findAll({
+                where: {email}, // 변수는 변수 한개만 넣어줘도 모든 속성 값에서 찾아줄 수 있다.
+            });
+
+            if (existUsers.length) {
+                res.status(200).send(false);
+                return;
+            } else {
+                res.status(200).send(true);
+                return;
+            }
+        } catch (error) {
+            console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
             res.status(200).send(false);
             return;
-        } else {
-            res.status(200).send(true);
-            return;
         }
+
     });
 
 

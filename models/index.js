@@ -9,7 +9,6 @@ const config = require('../config/config')[env];
 const db = {};
 
 let sequelize;
-// TODO DB가 꺼져있을 경우 어떤식으로 에러가 발생하는가 ?
 if (config.use_env_variable) {
     sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {

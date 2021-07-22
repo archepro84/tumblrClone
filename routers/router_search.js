@@ -39,7 +39,9 @@ router.route('/')
                 FROM Posts AS p
                 INNER JOIN Users AS u
                 USING(userId)
-                WHERE p.title LIKE '%${keyword}%'
+                WHERE p.title LIKE '%${keyword}%' 
+                    OR p.content LIKE '%${keyword}%'
+                    OR postId IN (SELECT postId FROM Tags WHERE tag LIKE '%${keyword}%') 
                 ORDER BY p.createdAt DESC
                 LIMIT ${start},${limit}`
             //Sequelize.query에서 에러가 발생할 경우 catch로 들어간다.
@@ -71,7 +73,6 @@ router.route('/')
                         )
                     }
                 })
-            // TODO 프로미스 내부에 작성해야 할까?
             res.send({result})
         } catch (error) {
             console.log(`${req.method} ${req.baseUrl} : ${error.message}`);

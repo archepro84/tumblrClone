@@ -6,7 +6,6 @@ const {Follows, sequelize, Sequelize} = require("../models")
 
 const userIdSchema = Joi.number().min(1).required()
 router.route('/')
-    // TODO 팔로우 추가를 좀더 DB를 적게 통신해서 확인할 수 없을까?
     .post(authMiddleware, async (req, res) => {
         try {
             const followUserId = res.locals.user.userId
@@ -24,7 +23,6 @@ router.route('/')
                              WHERE followUserId = ${followUserId} AND followerUserId = ${followerUserId});`
             const queryResult = await sequelize.query(query, {type: Sequelize.QueryTypes.SELECT})
             const {isExist, Following} = queryResult[0]
-
             if (isExist == 'N')
                 throw new Error("팔로우하려는 계정이 존재하지 않습니다.")
             else if (Following == 'Y')
