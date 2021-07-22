@@ -50,45 +50,43 @@ joi | 입력데이터 검출
 ### 1) 검색
 - 게시글을 검색할 때 Sequelize Law Query를 이용해 검색을 구현했습니다. 6개의 테이블을 각 테이블의 관계에 맞도록 조회하였습니다. Sub Query를 많이 사용해 DB에서 과부하 되지 않을까? 라는 생각을 하였지만, 최적화에 대한 문제를 더 파고들지 못한 부분이 아쉬웠습니다.
 
-```javascript
-const query = `
-    SELECT u.userId, u.nickname, u.profileImg, p.postId, p.reBlog, p.title,
-    (SELECT GROUP_CONCAT(img ORDER BY img ASC SEPARATOR ', ')
-        FROM Images
-        WHERE postId = p.postId
-        GROUP BY postId) AS img,
-    p.content,
-    (SELECT GROUP_CONCAT(tag ORDER BY tag ASC SEPARATOR ', ')
-        FROM Tags
-        WHERE postId = p.postId
-        GROUP BY postId) AS tag,
-    CASE WHEN p.postId IN (SELECT postId FROM Favorites WHERE userId=${userId}) THEN "Y" ELSE "N" END AS favorite,
-    (SELECT COALESCE(MIN('Y'), 'N')
-        FROM Follows
-        WHERE EXISTS (SELECT 1 FROM  Follows WHERE followUserId = ${userId} AND followerUserId=p.userId)) AS follow,
-    (SELECT COUNT(*) FROM Favorites WHERE postId=p.postId) AS reactionCount,
-    p.createdAt
-    FROM Posts AS p
-    INNER JOIN Users AS u
-    USING(userId)
-    WHERE p.title LIKE '%${keyword}%' 
-        OR p.content LIKE '%${keyword}%'
-        OR postId IN (SELECT postId FROM Tags WHERE tag LIKE '%${keyword}%') 
-    ORDER BY p.createdAt DESC
-    LIMIT ${start},${limit}` 
+```SQL
+SELECT u.userId, u.nickname, u.profileImg, p.postId, p.reBlog, p.title,
+(SELECT GROUP_CONCAT(img ORDER BY img ASC SEPARATOR ', ')
+    FROM Images
+    WHERE postId = p.postId
+    GROUP BY postId) AS img,
+p.content,
+(SELECT GROUP_CONCAT(tag ORDER BY tag ASC SEPARATOR ', ')
+    FROM Tags
+    WHERE postId = p.postId
+    GROUP BY postId) AS tag,
+CASE WHEN p.postId IN (SELECT postId FROM Favorites WHERE userId=${userId}) THEN "Y" ELSE "N" END AS favorite,
+(SELECT COALESCE(MIN('Y'), 'N')
+    FROM Follows
+    WHERE EXISTS (SELECT 1 FROM  Follows WHERE followUserId = ${userId} AND followerUserId=p.userId)) AS follow,
+(SELECT COUNT(*) FROM Favorites WHERE postId=p.postId) AS reactionCount,
+p.createdAt
+FROM Posts AS p
+INNER JOIN Users AS u
+USING(userId)
+WHERE p.title LIKE '%${keyword}%' 
+    OR p.content LIKE '%${keyword}%'
+    OR postId IN (SELECT postId FROM Tags WHERE tag LIKE '%${keyword}%') 
+ORDER BY p.createdAt DESC
+LIMIT ${start},${limit} 
 ```
 
 ### 2) 팔로우
 - Follower, Following기능을 구현하였습니다.
-``` javascript
-const query = `
+``` SQL
     SELECT
     CASE WHEN ${followerUserId} IN (SELECT userId FROM Users) THEN 'Y' ELSE 'N' END AS isExist,
     COALESCE(MIN('Y'), 'N') AS Following
     FROM Follows
     WHERE EXISTS ( SELECT 1 
                  FROM Follows 
-                 WHERE followUserId = ${followUserId} AND followerUserId = ${followerUserId});`
+                 WHERE followUserId = ${followUserId} AND followerUserId = ${followerUserId});
 ```
 
 
@@ -126,24 +124,23 @@ SELECT GROUP_CONCAT(tag ORDER BY tag ASC SEPARATOR ', ')
 ### 5) 게시글 반응
 - 게시글을 좋아요 하거나 리블로그 한 사람들의 목록을 순차적으로 볼 수 있습니다.
 
-```JAVASCRIPT
-const query = `
-    SELECT u.userId, u.nickname, 2 AS type, u.profileImg, p.createdAt
-    FROM Posts AS p
-    INNER JOIN Users AS u
-    ON p.userId = u.userId 
-    WHERE reBlog = ${postId}
-    
-    UNION ALL
-    
-    SELECT u.userId, u.nickname, 3 AS type, u.profileImg, f.createdAt
-    FROM Favorites AS f
-    INNER JOIN Users AS u
-    ON f.userId = u.userId
-    WHERE f.postId = ${postId}
-    
-    ORDER BY createdAt DESC
-    LIMIT ${start},${limit}` 
+```SQL
+SELECT u.userId, u.nickname, 2 AS type, u.profileImg, p.createdAt
+FROM Posts AS p
+INNER JOIN Users AS u
+ON p.userId = u.userId 
+WHERE reBlog = ${postId}
+
+UNION ALL
+
+SELECT u.userId, u.nickname, 3 AS type, u.profileImg, f.createdAt
+FROM Favorites AS f
+INNER JOIN Users AS u
+ON f.userId = u.userId
+WHERE f.postId = ${postId}
+
+ORDER BY createdAt DESC
+LIMIT ${start},${limit} 
 ```
 
 ## 6. Notion
