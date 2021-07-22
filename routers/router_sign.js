@@ -21,15 +21,16 @@ router.route('/')
                 const user = await Users.findOne({
                     where: {[Op.or]: [{email}, {nickname}]}
                 })
-                if (user != null) {
-                    res.send(false)
-                    return;
-                }
+                if (user != null)
+                    throw new Error("동일한 이메일 또는 닉네임 회원이 존재합니다.")
+
                 await Users.create({email, nickname, password})
-                res.send(true)
+                res.send()
             } catch (error) {
                 console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
-                res.send(false)
+                res.status(401).send(
+                    {errorMessage: "회원가입에 실패하였습니다."}
+                )
             }
         }
     )

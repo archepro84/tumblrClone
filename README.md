@@ -80,13 +80,13 @@ LIMIT ${start},${limit}
 ### 2) 팔로우
 - Follower, Following기능을 구현하였습니다.
 ``` SQL
-    SELECT
-    CASE WHEN ${followerUserId} IN (SELECT userId FROM Users) THEN 'Y' ELSE 'N' END AS isExist,
-    COALESCE(MIN('Y'), 'N') AS Following
-    FROM Follows
-    WHERE EXISTS ( SELECT 1 
-                 FROM Follows 
-                 WHERE followUserId = ${followUserId} AND followerUserId = ${followerUserId});
+SELECT
+CASE WHEN ${followerUserId} IN (SELECT userId FROM Users) THEN 'Y' ELSE 'N' END AS isExist,
+COALESCE(MIN('Y'), 'N') AS Following
+FROM Follows
+WHERE EXISTS ( SELECT 1 
+             FROM Follows 
+             WHERE followUserId = ${followUserId} AND followerUserId = ${followerUserId});
 ```
 
 
@@ -150,4 +150,4 @@ https://www.notion.so/99-1-3c5a2aec7ac94d46b8d1e95d4e873bb8
 https://github.com/HseongH/Tumblr_clone
 
 ## 8. Youtube
-https://www.youtube.com/watch?v=_s1qihwIG6A
+https://www.youtube.com/watch?v=HLYTArLgdeY

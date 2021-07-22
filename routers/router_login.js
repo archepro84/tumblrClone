@@ -62,26 +62,23 @@ router.route("/")
 router.route("/email")
     .post(loginCheckMiddleware, async (req, res) => {
         try {
-
             const {email} = await emailSchema.validateAsync(req.body);
 
             const existUsers = await Users.findAll({
                 where: {email}, // 변수는 변수 한개만 넣어줘도 모든 속성 값에서 찾아줄 수 있다.
             });
 
-            if (existUsers.length) {
-                res.status(200).send(false);
-                return;
-            } else {
-                res.status(200).send(true);
-                return;
-            }
+            if (existUsers.length)
+                throw new Error("이미 이메일이 존재 합니다.")
+            else
+                res.status(200).send();
+
         } catch (error) {
             console.log(`${req.method} ${req.baseUrl} : ${error.message}`);
-            res.status(200).send(false);
-            return;
+            res.status(401).send(
+                {errorMessage: "이메일 중복 검사에 실패하였습니다."}
+            )
         }
-
     });
 
 
