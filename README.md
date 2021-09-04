@@ -16,7 +16,7 @@
 2021년 7월 16일 ~ 2021년 7월 22일
 
 ## 👥 개발 인원
-- 이용우 (Node.js) @ [archepro84](https://github.com/archepro84)
+- 이용우 (Node.js) [팀장] @ [archepro84](https://github.com/archepro84)
 - 이해웅 (Node.js) @ [HW3542](https://github.com/HW3542)
 - 홍성훈 (React) @ [HseongH](https://github.com/HseongH)
 - 이선민 (React) @ [sunm-in](https://github.com/sunm-in)
