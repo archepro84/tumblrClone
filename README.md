@@ -48,6 +48,7 @@ joi | 입력데이터 검출
 ## 🗃 DB ERD
 ![image](https://blog.kakaocdn.net/dn/csyYol/btq99nLz5sx/Myv5qyQoMMmqDA1IKj3Km0/img.png)
 
+## 📋 [API Document](https://docs.google.com/spreadsheets/d/16bei4mL8K_fA4-Z0Fx30NjPpM8aKTkHc4ema2CfYSG4/edit#gid=328670061)
 
 ## 📂 [Notion](https://www.notion.so/99-1-3c5a2aec7ac94d46b8d1e95d4e873bb8)
 
