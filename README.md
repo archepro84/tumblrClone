@@ -1,24 +1,28 @@
 # ✏️tumblr 클론 코딩 - Backend
-## 웹사이트 주소
+<p align='center'>
+  <img src='https://img.shields.io/badge/express-4.17.1-white?logo=Express'>
+  <img src='https://img.shields.io/badge/MySQL-5.7-white?logo=MySQL'>
+</p>
 
-http://tumblrclone.shop/
+## 🏠 [Home Page](http://tumblrclone.shop/) / [Youtube](https://www.youtube.com/watch?v=HLYTArLgdeY)
+
 ![image](https://trusted-sail-28c.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Feb2937f3-d9bb-490d-8c76-f740b44d5141%2FKakaoTalk_20210722_232443002.png?table=block&id=10118037-69e4-43f3-bdde-da4800c7ab47&spaceId=a20e331e-ba66-495e-822f-cf3030cc4848&width=5760&userId=&cache=v2)
 
 
-## 프로젝트 소개
+## 🚩 프로젝트 소개
 블로그형 SNS tumblr를 클론코딩한 프로젝트 입니다.
 
-## 프로젝트 기간
+## 🗓 프로젝트 기간
 2021년 7월 16일 ~ 2021년 7월 22일
 
-## 1. 개발 인원
+## 👥 개발 인원
 - 이용우 (Node.js) @ [archepro84](https://github.com/archepro84)
 - 이해웅 (Node.js) @ [HW3542](https://github.com/HW3542)
 - 홍성훈 (React) @ [HseongH](https://github.com/HseongH)
 - 이선민 (React) @ [sunm-in](https://github.com/sunm-in)
 
 
-## 2. 기술스텍
+## 🛠 기술스텍
 
 Front | Back
 ---|---:
@@ -27,7 +31,7 @@ Redux | Express
 Axios | MySQL
 
 
-## 3. 사용 라이브러리
+## 📖 라이브러리
 
 라이브러리 | 설명
 ---|:---:
@@ -41,11 +45,16 @@ mysql | MySQL
 cookie-parser | 쿠키 저장
 joi | 입력데이터 검출
 
-## 4. DB ERD
+## 🗃 DB ERD
 ![image](https://blog.kakaocdn.net/dn/csyYol/btq99nLz5sx/Myv5qyQoMMmqDA1IKj3Km0/img.png)
 
 
-## 5. 코드 리뷰 및 개선사항
+## 📂 [Notion](https://www.notion.so/99-1-3c5a2aec7ac94d46b8d1e95d4e873bb8)
+
+## 🔨 [Front-End Git hub](https://github.com/HseongH/Tumblr_clone)
+
+
+## 📌 코드 리뷰 및 개선사항
 
 ### 1) 검색
 - 게시글을 검색할 때 Sequelize Law Query를 이용해 검색을 구현했습니다. 6개의 테이블을 각 테이블의 관계에 맞도록 조회하였습니다. Sub Query를 많이 사용해 DB에서 과부하 되지 않을까? 라는 생각을 하였지만, 최적화에 대한 문제를 더 파고들지 못한 부분이 아쉬웠습니다.
@@ -143,11 +152,4 @@ ORDER BY createdAt DESC
 LIMIT ${start},${limit} 
 ```
 
-## 6. Notion
-https://www.notion.so/99-1-3c5a2aec7ac94d46b8d1e95d4e873bb8
 
-## 7. Front-End Git hub
-https://github.com/HseongH/Tumblr_clone
-
-## 8. Youtube
-https://www.youtube.com/watch?v=HLYTArLgdeY
