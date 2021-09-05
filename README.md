@@ -58,7 +58,7 @@ joi | 입력데이터 검출
 ## 📌 코드 리뷰 및 개선사항
 
 ### 1) 검색
-- 게시글을 검색할 때 Sequelize Law Query를 이용해 검색을 구현했습니다. 6개의 테이블을 각 테이블의 관계에 맞도록 조회하였습니다. Sub Query를 많이 사용해 DB에서 과부하 되지 않을까? 라는 생각을 하였지만, 최적화에 대한 문제를 더 파고들지 못한 부분이 아쉬웠습니다.
+- 게시글을 검색할 때 Sequelize Raw Query를 이용해 검색을 구현했습니다. 6개의 테이블을 각 테이블의 관계에 맞도록 조회하였습니다. Sub Query를 많이 사용해 DB에서 과부하 되지 않을까? 라는 생각을 하였지만, 최적화에 대한 문제를 더 파고들지 못한 부분이 아쉬웠습니다.
 
 ```SQL
 SELECT u.userId, u.nickname, u.profileImg, p.postId, p.reBlog, p.title,
